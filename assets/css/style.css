@@ -1,0 +1,21 @@
+
+
+header{
+  background-image: linear-gradient(to right, skyblue , navy);
+  padding: 1rem;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  font-size: 2rem;
+
+}
+
+
+input, label {
+  display: block
+}
+
+aside {
+  padding: 10px;
+  margin-left: 20px
+}
