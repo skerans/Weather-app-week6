@@ -7,7 +7,6 @@ header{
   color: white;
   text-align: center;
   font-size: 2rem;
-
 }
 
 
@@ -18,4 +17,12 @@ input, label {
 aside {
   padding: 10px;
   margin-left: 20px
+}
+
+.weather-box{
+  font-size: 1.5rem;
+}
+
+.weather-box h2{
+  font-size: 2rem;
 }
