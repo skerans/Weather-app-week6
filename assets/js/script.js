@@ -1,15 +1,15 @@
 const APIKey = "65686d33b2a24534eb747adcc2cd72d1";
-currentLocation = "Denver";
 
+const currentLocation = document.getElementById('location-search')
+let today = moment();
 let locationsList = [];
 
 
 // weatherURL = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${APIKey}`;
 
 
-const b = new Date(1643827807000)
-let bay = b.getUTCDate();
-console.log(bay);
+
+// console.log(today.add(5, 'days').format("M/D/YYYY"));
 
 
 function getApi(requestURL) {
@@ -43,17 +43,18 @@ function makeLocationsList() {
 // submit button to 
 $("form").on("submit", function (event) {
   event.preventDefault();
-  let newLocation = $("#location-search").val().trim();
-  if (newLocation == "") {
+  let currentLocation = $("#location-search").val().trim();
+  if (currentLocation == "") {
     return
   }
-  if (locationsList.includes(newLocation)) {
+  if (locationsList.includes(currentLocation)) {
     return
   }
-  locationsList.push(newLocation);
+  locationsList.push(currentLocation);
   console.log(locationsList);
   makeLocationsList();
   storeLocation();
+  weatherNow(APIKey, currentLocation)
   $("#location-search").val("")
 })
 
@@ -63,13 +64,12 @@ $("form").on("submit", function (event) {
 //on click for previous searched cities
 $(document).on("click", ".locationButton", function (event) {
   event.preventDefault();
-  let newLocation = $(this).attr("id");
-  if (locationsList.includes(newLocation)) {
+  let currentLocation = $(this).attr("id");
+  weatherNow(APIKey, currentLocation)
+  if (locationsList.includes(currentLocation)) {
     return
   }
-  locationsList.push(newLocation);
-  console.log(newLocation);
-  console.log(locationsList);
+  locationsList.push(currentLocation);
   makeLocationsList();
   storeLocation();
   $("#location-search").val("")
@@ -86,17 +86,19 @@ function weatherNow(APIKey, currentLocation) {
     })
     .then(function (data) {
       console.log(data);
+      $(".forecast").empty();
+      $(".weather-box").empty();
       //set daily weather attributes
       $(".weather-box").append(
         `<div class="row">
         <h2 class="mr-3">${data.name} (${moment().format("M/D/YYYY")})</h2>
         <img src="http://openweathermap.org/img/w/${data.weather[0].icon}.png"></div>`)
       $(".weather-box").append(
-        `<p>Temp: ${Math.floor(data.main.temp)} &degF</p>`)
+        `<p class= "col-3">Temp: ${Math.floor(data.main.temp)} &degF</p>`)
       $(".weather-box").append(
-        `<p>Wind: ${data.wind.speed} MPH`)
+        `<p class= "col-3">Wind: ${data.wind.speed} MPH</p>`)
       $(".weather-box").append(
-        `<p>Humidity: ${data.main.humidity}%`)
+        `<p class= "col-3">Humidity: ${data.main.humidity}%</p>`)
       let lat = data.coord.lat;
       let lon = data.coord.lon;
       let queryWeather = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude={minutely,hourly}&units=imperial&appid=${APIKey}`
@@ -106,6 +108,9 @@ function weatherNow(APIKey, currentLocation) {
         })
         .then(function (data) {
           console.log(data);
+          $(".weather-box").append(
+            `<p class= "col-3" id="uvi">UVI: ${data.daily[0].uvi}`)
+
           //set background color of uvi index
           if (data.daily[0].uvi < 3) {
             $("#uvi").addClass("uvi-low")
@@ -118,20 +123,30 @@ function weatherNow(APIKey, currentLocation) {
           } else {
             $("#uvi").addClass("uvi-extreme")
           }
-          $(".weather-box").append(
-            `<p id="uvi">UVI: ${data.daily[0].uvi}`)
-          //set cards for upcoming forecast
-          for (let i = 0; i < 6; i++) {
-            
-          }
 
+          //set cards for upcoming forecast
+          for (let i = 0; i < 5; i++) {
+            let tmpDate = today.add(1, 'd').format("M/D/YYYY")
+            $(".forecast").append(
+              `<div class="card border">
+                <div class="card-body"
+                  <h3 class= "card-title">${tmpDate}</h3>
+                  <img src="http://openweathermap.org/img/w/${data.daily[i].weather[0].icon}.png">
+                  <p class= "card-text">Temp: ${data.daily[i].temp.max} &degF</p>
+                  <p class= "card-text">Wind: ${data.daily[i].wind_speed} MPH</p>
+                  <p class= "card-text">Humidity: ${data.daily[i].humidity}%</p>
+                </div>
+              </div>`)}
         })
     })
-
 }
 
-//daily[0] = today
+function init() {
+  let storedLocations = JSON.parse(localStorage.getItem("location"))
+  if(storedLocations) {
+    locationsList = storedLocations;
+  }
+  makeLocationsList()
+}
 
-
-
-weatherNow(APIKey, currentLocation)
+init()
