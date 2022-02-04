@@ -3,6 +3,7 @@ currentLocation = "Denver";
 
 let locationsList = [];
 
+
 // weatherURL = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${APIKey}`;
 
 
@@ -12,20 +13,20 @@ console.log(bay);
 
 
 function getApi(requestURL) {
-fetch(requestURL) 
-  .then(function (response) {
-    return response.json();
-  })
-  .then(function (data) {
-    console.log(data);
-  })
+  fetch(requestURL)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      console.log(data);
+    })
 }
 
 
 
 //sets location into local storage under key "location"
 function storeLocation() {
-  localStorage.setItem("location", json.stringify(locationsList))
+  localStorage.setItem("location", JSON.stringify(locationsList))
 }
 
 
@@ -43,19 +44,40 @@ function makeLocationsList() {
 $("form").on("submit", function (event) {
   event.preventDefault();
   let newLocation = $("#location-search").val().trim();
-  console.log(newLocation);
+  if (newLocation == "") {
+    return
+  }
+  if (locationsList.includes(newLocation)) {
+    return
+  }
   locationsList.push(newLocation);
   console.log(locationsList);
   makeLocationsList();
+  storeLocation();
   $("#location-search").val("")
 })
-//on click for previous searched cities
-// $(".locationList").on("click", )
 
+
+
+
+//on click for previous searched cities
+$(document).on("click", ".locationButton", function (event) {
+  event.preventDefault();
+  let newLocation = $(this).attr("id");
+  if (locationsList.includes(newLocation)) {
+    return
+  }
+  locationsList.push(newLocation);
+  console.log(newLocation);
+  console.log(locationsList);
+  makeLocationsList();
+  storeLocation();
+  $("#location-search").val("")
+})
 
 //function to search for current weather data
 function weatherNow(APIKey, currentLocation) {
-  
+
   weatherURL = `http://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=imperial&appid=${APIKey}`;
 
   fetch(weatherURL)
@@ -64,6 +86,7 @@ function weatherNow(APIKey, currentLocation) {
     })
     .then(function (data) {
       console.log(data);
+      //set daily weather attributes
       $(".weather-box").append(
         `<div class="row">
         <h2 class="mr-3">${data.name} (${moment().format("M/D/YYYY")})</h2>
@@ -74,7 +97,41 @@ function weatherNow(APIKey, currentLocation) {
         `<p>Wind: ${data.wind.speed} MPH`)
       $(".weather-box").append(
         `<p>Humidity: ${data.main.humidity}%`)
-    })
-  }
+      let lat = data.coord.lat;
+      let lon = data.coord.lon;
+      let queryWeather = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude={minutely,hourly}&units=imperial&appid=${APIKey}`
+      fetch(queryWeather)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          console.log(data);
+          //set background color of uvi index
+          if (data.daily[0].uvi < 3) {
+            $("#uvi").addClass("uvi-low")
+          } else if (data.daily[0].uvi < 6) {
+            $("#uvi").addClass("uvi-moderate")
+          } else if (data.daily[0].uvi < 8) {
+            $("#uvi").addClass("uvi-high")
+          } else if (data.daily[0].uvi < 11) {
+            $("#uvi").addClass("uvi-very-high")
+          } else {
+            $("#uvi").addClass("uvi-extreme")
+          }
+          $(".weather-box").append(
+            `<p id="uvi">UVI: ${data.daily[0].uvi}`)
+          //set cards for upcoming forecast
+          for (let i = 0; i < 6; i++) {
+            
+          }
 
-  weatherNow(APIKey, currentLocation)
+        })
+    })
+
+}
+
+//daily[0] = today
+
+
+
+weatherNow(APIKey, currentLocation)

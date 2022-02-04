@@ -9,7 +9,6 @@ header{
   font-size: 2rem;
 }
 
-
 input, label {
   display: block
 }
@@ -25,4 +24,24 @@ aside {
 
 .weather-box h2{
   font-size: 2rem;
+}
+
+.uvi-low{
+  background-color: green;
+}
+
+.uvi-moderate {
+  background-color: yellow;
+}
+
+.uvi-high {
+  background-color: orange;
+}
+
+.uvi-very-high {
+  background-color: red;
+}
+
+.uvi-extreme {
+  background-color: violet;
 }
