@@ -78,7 +78,7 @@ $(document).on("click", ".locationButton", function (event) {
 //function to search for current weather data
 function weatherNow(APIKey, currentLocation) {
 
-  weatherURL = `http://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=imperial&appid=${APIKey}`;
+  weatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${currentLocation}&units=imperial&appid=${APIKey}`;
 
   fetch(weatherURL)
     .then(function (response) {
@@ -92,7 +92,7 @@ function weatherNow(APIKey, currentLocation) {
       $(".weather-box").append(
         `<div class="row">
         <h2 class="mr-3">${data.name} (${moment().format("M/D/YYYY")})</h2>
-        <img src="http://openweathermap.org/img/w/${data.weather[0].icon}.png"></div>`)
+        <img src="https://openweathermap.org/img/w/${data.weather[0].icon}.png"></div>`)
       $(".weather-box").append(
         `<p class= "col-3">Temp: ${Math.floor(data.main.temp)} &degF</p>`)
       $(".weather-box").append(
@@ -131,7 +131,7 @@ function weatherNow(APIKey, currentLocation) {
               `<div class="card border">
                 <div class="card-body"
                   <h3 class= "card-title">${tmpDate}</h3>
-                  <img src="http://openweathermap.org/img/w/${data.daily[i].weather[0].icon}.png">
+                  <img src="https://openweathermap.org/img/w/${data.daily[i].weather[0].icon}.png">
                   <p class= "card-text">Temp: ${data.daily[i].temp.max} &degF</p>
                   <p class= "card-text">Wind: ${data.daily[i].wind_speed} MPH</p>
                   <p class= "card-text">Humidity: ${data.daily[i].humidity}%</p>
